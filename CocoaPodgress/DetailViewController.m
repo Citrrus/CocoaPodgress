@@ -20,6 +20,7 @@
 #import <HTProgressHUD.h>
 #import <HTProgressHUDIndicatorView.h>
 #import <HTProgressHUDFadeZoomAnimation.h>
+#import <JSProgressHUD.h>
 
 @interface DetailViewController ()
 - (void)configureView;
@@ -35,10 +36,26 @@
     {
         self.navigationItem.title = [self.detailItem description];
     }
-    
-    NSString *progressViewName = [self.detailItem description];
-    
-    [self performSelector:NSSelectorFromString(progressViewName)];
+}
+
+- (void)loadProgress
+{
+    SEL progressSelector = NSSelectorFromString([self.detailItem description]);
+    if ([self respondsToSelector:progressSelector])
+    {
+        [self performSelector:progressSelector];
+    }
+    else
+    {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                            message:@"Couldn't find example code for that pod."
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+        
+        [alertView show];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }
 }
 
 - (void)viewDidLoad
@@ -52,6 +69,11 @@
     }
 
     [self configureView];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [self loadProgress];
 }
 
 - (void)didReceiveMemoryWarning
@@ -382,5 +404,30 @@
 }
 
 
+- (void) JSProgressHUD
+{
+    UIView *view;
+    JSProgressHUD *progress;
+    
+    view = [[UIView alloc] initWithFrame:[self rectForIndex:-2 outOf:4]];
+    progress = [JSProgressHUD progressViewInView:view];
+    [progress showWithStatus:@"Loading stuff..."];
+    [self.view addSubview:view];
+
+    view = [[UIView alloc] initWithFrame:[self rectForIndex:-1 outOf:4]];
+    progress = [JSProgressHUD progressViewInView:view];
+    [progress showWithMaskType:JSProgressHUDMaskTypeNone];
+    [self.view addSubview:view];
+    
+    view = [[UIView alloc] initWithFrame:[self rectForIndex:0 outOf:4]];
+    progress = [JSProgressHUD progressViewInView:view];
+    [progress showWithStatus:@"Another status..." maskType:JSProgressHUDMaskTypeNone];
+    [self.view addSubview:view];
+    
+    view = [[UIView alloc] initWithFrame:[self rectForIndex:1 outOf:4]];
+    progress = [JSProgressHUD progressViewInView:view];
+    [progress showWithStatus:@"Yet another..." maskType:JSProgressHUDMaskTypeNone];
+    [self.view addSubview:view];
+}
 
 @end
